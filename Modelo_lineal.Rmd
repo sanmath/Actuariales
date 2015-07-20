@@ -1,0 +1,86 @@
+---
+title: "Repaso Modelos Lineales"
+author: "Boris Polanco"
+date: "Lunes, 20 de julio, 2015"
+output: pdf_document
+---
+\section{Utilidad neta en función de las ventas}
+se cuentan con datos mensuales desde Enero del 2001 hasta Abril del 2004. Se tiene los datos siguientes:
+Realizamos un gráfico de dispersión
+
+```{r,echo=FALSE}
+setwd("~/GitHub/Actuariales")
+
+datos<-read.csv("utilidad_vs_ventas.csv",header=TRUE,sep = ",")
+plot(datos$V,datos$U,type = "p",col="blue",xlab = "Ventas",
+     ylab = "Utilidad",main = "Utilidad en función de las ventas")
+grid(col="black")
+```
+ Para encontrar la ecuación de la recta de regresión vamos a utilizar la función _lm()_.
+Se obtienen los siguientes resultados:
+
+```{r,echo=FALSE}
+modelo<-lm(datos$U~datos$V)
+summary(modelo)
+```
+ La ecuación de la recta de regresión viene dada entonces por la expresión
+ \begin{equation}
+ U=137.09+0.44V
+ \end{equation}
+Dado que las ventas como las utilidades están expresadas en dólares, diremos que si las ventas se incrementan en un dólar, la utilidad neta se incrementa en promedio $44$ centavos, también se puede decir que la utilidad media es el $44$ por ciento de las ventas.
+ 
+ Verifiquemos que los estimadores encontrados $\hat{\beta_1}$ y $\hat{\beta_2}$, son no correlacionados, para ello calculamos la covarianza entre ambos estimadores. la cual viene dada por:
+ \begin{equation}
+ cov(\hat{\beta_1},\hat{\beta_2})=\frac{-\sigma^2}{S_{xx}}
+ \end{equation}
+  con $S_{xx}=\displaystyle\sum({x_i-\hat{x}})^2$.
+  \section{Intervalos de confianza}
+  Los intervalos de confianza con nivel $1-\alpha$ para los parámetros $\beta_i$ vienen dados por la siguiente expresión:
+  \begin{equation}
+  \hat{\beta_i}\pm ee(\hat{\beta_i})t_{n-2}(\alpha/2)
+  \end{equation}
+  donde $t_{n-2}(\alpha/2)$ es el fractil de orden $1-\alpha/2$ de la ley de student con $n-2$ grados de libertad.
+  Para nuestro caso utilizando R, podemos encontrar estos intervalos utilizando la función _confint()_.
+  
+```{r,echo=FALSE}
+plot(datos$V,datos$U,type = "p",col="blue",xlab = "Ventas",
+     ylab = "Utilidad",main = "Utilidad en función de las ventas")
+grid(col="black")
+abline(modelo,col="red","Recta de Regresión")
+```
+\section{Coeficiente de determinación}
+Es un buen indicador de la calidad de la regresión, pero no es determinante ni suficiente para decidir sobre la adecuación del modelo. Su uso es muy difundido pero en general inapropiado porque no tienen presentes las limitaciones y alcances de este indicador. Además no se estudian los residuos, como se indica más adelante.
+\section{Coeficiente $R^2$}
+  Una regresión será buena si la variabilidad explicada por la regresión es relativamente alta con respecto a la variabilidad total de Y, es decir si $SEC \approx STC$, donde $SEC=\displaystyle\sum_{i=1}^n(\hat{y_i}-\bar{y})^2$ y $STC=\displaystyle\sum_{i=1}^n(y_i-\bar{y})^2$. 
+  \subsection{Definición} Se denomina coeficiente de determinación $R^2$ al cociente
+  \begin{equation}
+  R^2=\frac{SEC}{STC}
+  \end{equation}
+Para nuestro caso lo calculamos en R de la siguiente manera:
+```{r,echo=FALSE}
+  summary(modelo)$r.squared 
+```
+Para interpretar este coeficiente lo multiplicamos por $100$ y lo interpretamos como porcentaje, que es el porcentaje de variabilidad explicada por la regresión con respecto a  la variabilidad total. Por lo que el modelo propuesto explica aproximadamente el $94\%$ de la variabilidad de $Y$.
+\section{Gráficos de residuos}
+No se pueden conocer los errores $u_i$, pero si se pueden calcular los residuos $\hat{u_i}=y_i-\hat{y_i}$, estos no son estimadores de los errores pero si dan información sobre ellos. Las hipótesis asumidas: linealidad, igualdad de varianzas, no correlación y normalidad deben reflejarse en los gráficos de los residuos.
+Los residuos pueden indicar
+\begin{itemize}
+\item La función de regresión no es lineal.
+\item La varianza de los errores no es constante.
+\item Los errores son correlacionados.
+\item Existen observaciones singulares.
+\item Los errores no son normalmente distribuídos.
+\item Uno o varios regresores han sido omitidos del modelo
+\end{itemize}
+
+\subsection{Residuos en función de: $\hat{Y}$ y de $X$}
+Se grafica los puntos ${(\hat{y_i},\hat{u_i})|i=1,2...,n}$ y también ${(x_i,\hat{u_i})|i=1,2...,n}$. Si los puntos están dentro de una franja horizontal simétrica al eje $X$ no habrá evidencia de violación de hipótesis.
+
+PAra nuestro caso utilizando la función:
+```{r,echo=FALSE}
+u<-datos$U-fitted(modelo)
+plot(fitted(modelo),u,main="Gráfico de residuos",ylab="Residuos",xlab="Valores ajustados")
+
+```
+
+
