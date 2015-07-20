@@ -76,10 +76,11 @@ Los residuos pueden indicar
 \subsection{Residuos en función de: $\hat{Y}$ y de $X$}
 Se grafica los puntos ${(\hat{y_i},\hat{u_i})|i=1,2...,n}$ y también ${(x_i,\hat{u_i})|i=1,2...,n}$. Si los puntos están dentro de una franja horizontal simétrica al eje $X$ no habrá evidencia de violación de hipótesis.
 
-PAra nuestro caso utilizando la función:
+
 ```{r,echo=FALSE}
 u<-datos$U-fitted(modelo)
-plot(fitted(modelo),u,main="Gráfico de residuos",ylab="Residuos",xlab="Valores ajustados")
+plot(fitted(modelo),u,main="Gráfico de residuos",
+     ylab="Residuos",xlab="Valores ajustados")
 
 ```
 
